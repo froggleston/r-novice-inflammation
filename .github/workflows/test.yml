@@ -1,0 +1,11 @@
+name: "Test Workflow Run Trigger"
+on:
+  workflow_run:
+    workflows: ["Bot: Receive Pull Request"]
+    types: [completed]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log trigger
+        run: echo "Workflow run triggered successfully"
