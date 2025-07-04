@@ -7,6 +7,7 @@ source: Rmd
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 
+- Add fake objective to test PR
 - Read tabular data from a file into a program.
 - Assign values to variables.
 - Select individual values and subsections from data.
