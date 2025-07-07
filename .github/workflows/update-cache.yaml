@@ -126,9 +126,15 @@ jobs:
           PAT=$(echo "$SECRET" | jq -r .[])
           echo "::add-mask::$PAT"
 
+      - name: "Validate token"
+        id: validate-token
+        uses: carpentries/actions/check-valid-credentials@main
+        with:
+          token: ${{ secrets.SANDPAPER_WORKFLOW || steps.set-pat.outputs.pat }}
+
       - name: Create Pull Request
         id: cpr
-        if: ${{ steps.update.outputs.n > 0 }}
+        if: steps.update.outputs.n > 0 && steps.validate-token.outputs.workflow == 'true'
         uses: carpentries/create-pull-request@main
         with:
           token: ${{ secrets.SANDPAPER_WORKFLOW || steps.set-pat.outputs.pat }}
@@ -169,6 +175,6 @@ jobs:
       - name: Trigger checks
         if: ${{ steps.cpr.outputs.pull-request-number != '' }}
         env:
-          GH_TOKEN: ${{ needs.preflight.outputs.pat }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh workflow run docker_pr_receive.yaml --field pr_number=${{ steps.cpr.outputs.pull-request-number }}
