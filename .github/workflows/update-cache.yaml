@@ -80,6 +80,7 @@ jobs:
       issues: write
     if: ${{ needs.check-renv.outputs.renv-needed == 'true' }}
     env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RENV_PATHS_ROOT: ~/.local/share/renv/
     steps:
       - name: "Checkout Lesson"
