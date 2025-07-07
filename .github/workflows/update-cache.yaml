@@ -122,7 +122,7 @@ jobs:
         shell: bash
         run: |
           SECRET=$(aws secretsmanager get-secret-value \
-                   --secret-id ${{ inputs.aws-secret-id }} \
+                   --secret-id carpentries-bot/github-pat \
                    --query SecretString --output text)
           PAT=$(echo "$SECRET" | jq -r .[])
           echo "::add-mask::$PAT"
