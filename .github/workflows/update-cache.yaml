@@ -134,7 +134,7 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
-        if: steps.update.outputs.n > 0 && steps.validate-token.outputs.workflow == 'true'
+        if: steps.update.outputs.n > 0 && steps.validate-token.outputs.wf == 'true'
         uses: carpentries/create-pull-request@main
         with:
           token: ${{ secrets.SANDPAPER_WORKFLOW || steps.set-pat.outputs.pat }}
