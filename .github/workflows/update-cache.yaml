@@ -1,4 +1,4 @@
-name: "02 Maintain: Check for Updated Packages"
+name: "02 Maintain: Check for Updated Packages A"
 
 on:
   workflow_dispatch:
@@ -55,6 +55,7 @@ jobs:
           fi
 
   validate-org-workflow:
+    name: "Validate Current Org and Workflow"
     uses: froggleston/validate-org-workflow@main
     with:
       repo: ${{ github.repository }}
