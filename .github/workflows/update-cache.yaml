@@ -53,14 +53,6 @@ jobs:
             echo "ok=false" >> $GITHUB_OUTPUT
             echo "Not Running Today"
           fi
-
-  validate-org-workflow:
-    name: "Validate Current Org and Workflow"
-    uses: froggleston/actions/validate-org-workflow@main
-    with:
-      repo: ${{ github.repository }}
-      workflow: ${{ github.workflow }}
-
   check-renv:
     name: "Check If We Need {renv}"
     runs-on: ubuntu-latest
@@ -80,7 +72,7 @@ jobs:
   update_cache:
     name: "Create Package Update Pull Request"
     runs-on: ubuntu-22.04
-    needs: [validate-org-workflow, check-renv]
+    needs: check-renv
     permissions:
       contents: write
       pull-requests: write
@@ -108,15 +100,22 @@ jobs:
           generate-cache: ${{ env.LOCKFILE_CACHE_GEN }}
           cache-version: ${{ secrets.CACHE_VERSION }}
 
+      - name: "Validate Current Org and Workflow"
+        id: validate-org-workflow
+        uses: froggleston/actions/validate-org-workflow@main
+        with:
+          repo: ${{ github.repository }}
+          workflow: ${{ github.workflow }}
+
       - name: Configure AWS credentials via OIDC
-        if: needs.validate-org-workflow.outputs.is_valid == 'true'
+        if: steps.validate-org-workflow.outputs.is_valid == 'true'
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           role-to-assume: arn:aws:iam::860325783027:role/carpentries-github-oidc-auth
           aws-region: us-east-1
 
       - name: Set PAT from AWS Secrets Manager
-        if: needs.validate-org-workflow.outputs.is_valid == 'true'
+        if: steps.validate-org-workflow.outputs.is_valid == 'true'
         id: set-pat
         shell: bash
         run: |
