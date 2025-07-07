@@ -58,6 +58,7 @@ jobs:
         if: ${{ steps.check.outputs.ok == 'true' }}
         name: Resolve hybrid GitHub auth
         uses: froggleston/actions/hybrid-auth@main
+        secrets: inherit
         with:
           org: froggleston
 
