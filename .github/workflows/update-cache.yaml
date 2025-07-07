@@ -35,12 +35,8 @@ jobs:
   preflight:
     name: "Preflight: Manual or Scheduled Trigger?"
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # OIDC permission required
-      contents: read
     outputs:
       ok: ${{ steps.check.outputs.ok }}
-      pat: ${{ secrets.SANDPAPER_WORKFLOW || steps.do-auth.outputs.pat }}
     steps:
       - id: check
         run: |
@@ -57,13 +53,13 @@ jobs:
             echo "ok=false" >> $GITHUB_OUTPUT
             echo "Not Running Today"
           fi
-      - id: do-auth
-        if: ${{ steps.check.outputs.ok == 'true' }}
-        name: Resolve hybrid GitHub auth
-        uses: froggleston/actions/hybrid-auth@main
-        with:
-          org: froggleston
-  
+
+  validate-org-workflow:
+    uses: froggleston/validate-org-workflow@main
+    with:
+      repo: ${{ github.repository }}
+      workflow: ${{ github.workflow }}
+
   check-renv:
     name: "Check If We Need {renv}"
     runs-on: ubuntu-latest
@@ -83,7 +79,7 @@ jobs:
   update_cache:
     name: "Create Package Update Pull Request"
     runs-on: ubuntu-22.04
-    needs: check-renv
+    needs: [validate-org-workflow, check-renv]
     permissions:
       contents: write
       pull-requests: write
@@ -91,7 +87,6 @@ jobs:
       issues: write
     if: ${{ needs.check-renv.outputs.renv-needed == 'true' }}
     env:
-      GITHUB_PAT: ${{ needs.preflight.outputs.pat }}
       RENV_PATHS_ROOT: ~/.local/share/renv/
     steps:
       - name: "Checkout Lesson"
@@ -112,12 +107,30 @@ jobs:
           generate-cache: ${{ env.LOCKFILE_CACHE_GEN }}
           cache-version: ${{ secrets.CACHE_VERSION }}
 
+      - name: Configure AWS credentials via OIDC
+        if: needs.validate-org-workflow.outputs.is_valid == 'true'
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: arn:aws:iam::860325783027:role/carpentries-github-oidc-auth
+          aws-region: us-east-1
+
+      - name: Set PAT from AWS Secrets Manager
+        if: needs.validate-org-workflow.outputs.is_valid == 'true'
+        id: set-pat
+        shell: bash
+        run: |
+          SECRET=$(aws secretsmanager get-secret-value \
+                   --secret-id ${{ inputs.aws-secret-id }} \
+                   --query SecretString --output text)
+          PAT=$(echo "$SECRET" | jq -r .[])
+          echo "::add-mask::$PAT"
+
       - name: Create Pull Request
         id: cpr
         if: ${{ steps.update.outputs.n > 0 }}
         uses: carpentries/create-pull-request@main
         with:
-          token: ${{ needs.preflight.outputs.pat }}
+          token: ${{ secrets.SANDPAPER_WORKFLOW || steps.set-pat.outputs.pat }}
           delete-branch: true
           branch: "update/packages"
           commit-message: "[actions] update ${{ steps.update.outputs.n }} packages"
