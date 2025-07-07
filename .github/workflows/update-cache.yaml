@@ -40,7 +40,7 @@ jobs:
       contents: read
     outputs:
       ok: ${{ steps.check.outputs.ok }}
-      pat: ${{ secrets.SANDPAPER_WORKFLOW || env.SANDPAPER_WORKFLOW }}
+      pat: ${{ secrets.SANDPAPER_WORKFLOW || steps.do-auth.outputs.pat }}
     steps:
       - id: check
         run: |
