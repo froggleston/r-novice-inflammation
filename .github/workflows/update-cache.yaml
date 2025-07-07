@@ -35,6 +35,9 @@ jobs:
   preflight:
     name: "Preflight: Manual or Scheduled Trigger?"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # OIDC permission required
+      contents: read
     outputs:
       ok: ${{ steps.check.outputs.ok }}
       pat: ${{ secrets.SANDPAPER_WORKFLOW || env.SANDPAPER_WORKFLOW }}
