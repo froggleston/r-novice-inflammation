@@ -1,4 +1,4 @@
-name: "02 Maintain: Check for Updated Packages A"
+name: "02 Maintain: Check for Updated Packages"
 
 on:
   workflow_dispatch:
