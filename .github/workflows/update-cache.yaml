@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ok: ${{ steps.check.outputs.ok }}
+      pat: ${{ env.SANDPAPER_WORKFLOW }}
     steps:
       - id: check
         run: |
@@ -53,12 +54,18 @@ jobs:
             echo "ok=false" >> $GITHUB_OUTPUT
             echo "Not Running Today"
           fi
+      - id: do-auth
+        if: ${{ steps.check.outputs.ok == 'true' }}
+        name: Resolve hybrid GitHub auth
+        uses: froggleston/actions/hybrid-auth@main
+        with:
+          org: froggleston
 
   check-renv:
     name: "Check If We Need {renv}"
     runs-on: ubuntu-latest
     needs: preflight
-    if: ${{ needs.preflight.outputs.ok == 'true'}}
+    if: ${{ needs.preflight.outputs.ok == 'true' }}
     outputs:
       renv-needed: ${{ steps.check-for-renv.outputs.exists }}
     steps:
@@ -81,7 +88,7 @@ jobs:
       issues: write
     if: ${{ needs.check-renv.outputs.renv-needed == 'true' }}
     env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PAT: ${{ needs.preflight.outputs.pat }}
       RENV_PATHS_ROOT: ~/.local/share/renv/
     steps:
       - name: "Checkout Lesson"
@@ -107,7 +114,7 @@ jobs:
         if: ${{ steps.update.outputs.n > 0 }}
         uses: carpentries/create-pull-request@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ needs.preflight.outputs.pat }}
           delete-branch: true
           branch: "update/packages"
           commit-message: "[actions] update ${{ steps.update.outputs.n }} packages"
@@ -145,6 +152,6 @@ jobs:
       - name: Trigger checks
         if: ${{ steps.cpr.outputs.pull-request-number != '' }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ needs.preflight.outputs.pat }}
         run: |
           gh workflow run docker_pr_receive.yaml --field pr_number=${{ steps.cpr.outputs.pull-request-number }}
