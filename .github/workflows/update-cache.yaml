@@ -126,6 +126,7 @@ jobs:
                    --query SecretString --output text)
           PAT=$(echo "$SECRET" | jq -r .[])
           echo "::add-mask::$PAT"
+          echo "pat=$PAT" >> "$GITHUB_OUTPUT"
 
       - name: "Validate token"
         id: validate-token
