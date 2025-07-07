@@ -56,7 +56,7 @@ jobs:
 
   validate-org-workflow:
     name: "Validate Current Org and Workflow"
-    uses: froggleston/validate-org-workflow@main
+    uses: froggleston/actions/validate-org-workflow@main
     with:
       repo: ${{ github.repository }}
       workflow: ${{ github.workflow }}
