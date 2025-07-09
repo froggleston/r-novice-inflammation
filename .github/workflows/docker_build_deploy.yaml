@@ -239,6 +239,7 @@ jobs:
             ver="$tag"
           fi
           echo "CONTAINER_VER=$ver" >> $GITHUB_ENV
+        shell: bash
 
       - name: Restore renv from cache
         id: restore-renv-cache

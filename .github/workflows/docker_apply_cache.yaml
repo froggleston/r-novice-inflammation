@@ -134,6 +134,7 @@ jobs:
             ver="$tag"
           fi
           echo "CONTAINER_VER=$ver" >> $GITHUB_ENV
+        shell: bash
 
       - name: Cache renv Directory
         uses: actions/cache@v4
