@@ -137,10 +137,7 @@ jobs:
           steps.update.outputs.n > 0 &&
           (
             steps.validate-token.outputs.wf == 'true' ||
-            (
-              secrets.SANDPAPER_WORKFLOW == '' &&
-              steps.set-pat.outputs.pat == ''
-            )
+            steps.validate-org-workflow.outputs.is_valid == 'false'
           )
         uses: carpentries/create-pull-request@main
         with:
