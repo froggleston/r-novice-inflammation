@@ -108,7 +108,6 @@ jobs:
         with:
           repo: ${{ github.repository }}
           workflow: ${{ github.workflow }}
-        secrets:
           aws_gh_oidc_arn: ${{ secrets.AWS_GH_OIDC_ARN }}
           aws_gh_oidc_region: ${{ secrets.AWS_GH_OIDC_REGION }}
 
