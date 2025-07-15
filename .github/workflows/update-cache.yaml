@@ -104,7 +104,8 @@ jobs:
 
       - name: "Validate Current Org and Workflow"
         id: validate-org-workflow
-        uses: froggleston/actions/validate-org-workflow@main
+        # uses: froggleston/actions/validate-org-workflow@main
+        uses: froggleston/actions/.github/workflows/validate-org-workflow.yaml@main
         with:
           repo: ${{ github.repository }}
           workflow: ${{ github.workflow }}
