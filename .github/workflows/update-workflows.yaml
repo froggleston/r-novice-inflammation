@@ -19,7 +19,6 @@ on:
 jobs:
   validate-org-workflow:
     name: "Validate Current Org and Workflow"
-    runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write # OIDC permission required
@@ -40,16 +39,6 @@ jobs:
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
-
-      - name: "Validate Current Org and Workflow"
-        id: validate-org-workflow
-        uses: froggleston/actions/.github/workflows/validate-org-workflow.yaml@main
-        with:
-          repo: ${{ github.repository }}
-          workflow: ${{ github.workflow }}
-        secrets:
-          aws_gh_oidc_arn: ${{ secrets.AWS_GH_OIDC_ARN }}
-          aws_gh_oidc_region: ${{ secrets.AWS_GH_OIDC_REGION }}
 
       - name: Set PAT from AWS Secrets Manager
         if: ${{ jobs.validate-org-workflow.outputs.is_valid == 'true' }}
