@@ -136,3 +136,17 @@ jobs:
           key: ${{ github.repository }}-${{ steps.wb-vers.outputs.container-version }}-renv-${{ needs.check-renv.outputs.renv-cache-hashsum }}
           restore-keys:
             ${{ github.repository }}-${{ steps.wb-vers.outputs.container-version }}-renv-
+
+  # trigger the build deploy workflow if update-renv-cache was successful
+  trigger-build-deploy:
+    name: "Trigger Build and Deploy Workflow"
+    runs-on: ubuntu-latest
+    needs: [check-renv, update-renv-cache]
+    if: |
+      needs.update-renv-cache.outcome == 'success'
+    steps:
+      - name: "Trigger Build and Deploy Workflow"
+        run: |
+          gh workflow run docker_build_deploy.yaml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
