@@ -41,8 +41,7 @@ jobs:
     steps:
       - name: "Check for renv"
         id: check-for-renv
-        uses: carpentries/actions/renv-checks@frog-renv-apply-1
-
+        uses: carpentries/actions/renv-checks@main
   no-renv-cache-used:
     name: "No renv cache used"
     runs-on: ubuntu-latest
