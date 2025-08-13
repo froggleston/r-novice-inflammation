@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: "Should we run build and deploy?"
         id: build-check
-        uses: froggleston/actions/build-preflight@docker_composites
+        uses: carpentries/actions/build-preflight@main
         with:
           sandpaper-version: ${{ vars.SANDPAPER_VER || github.event.inputs.sandpaper-version || 'latest' }}
           pegboard-version: ${{ vars.PEGBOARD_VER || github.event.inputs.pegboard-version || 'latest' }}
@@ -104,7 +104,7 @@ jobs:
 
       - name: "Setup Lesson Dependencies"
         id: build-container-deps
-        uses: froggleston/actions/build-container-deps@docker_composites
+        uses: carpentries/actions/build-container-deps@main
         with:
           WORKBENCH_TAG: ${{ vars.WORKBENCH_TAG || 'latest' }}
           LESSON_PATH: ${{ vars.LESSON_PATH || '/home/rstudio/lesson' }}
