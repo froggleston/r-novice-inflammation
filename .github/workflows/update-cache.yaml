@@ -184,6 +184,8 @@ jobs:
 
       - name: "Trigger Apply Cache Workflow"
         if: ${{ steps.update.outputs.n == 0 }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh workflow run docker_apply_cache.yaml
         shell: bash
