@@ -46,7 +46,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GH_OIDC_ARN }}
           aws-region: ${{ secrets.AWS_GH_OIDC_REGION }}
         if: |
-          steps.upload-cache.outcome == 'success' &&
           env.role-to-assume != '' &&
           env.aws-region != ''
         with:
