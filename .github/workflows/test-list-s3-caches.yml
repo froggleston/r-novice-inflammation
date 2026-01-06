@@ -12,6 +12,9 @@ jobs:
   test-s3-list:
     name: "List S3 renv caches"
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
     
     steps:
       - uses: actions/checkout@v4
